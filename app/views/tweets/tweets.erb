@@ -1,0 +1,13 @@
+<h1>Welcome, <%= @user.username %></h1>
+<h2>Here are all of the tweets on Fwitter</h2>
+<br>
+<% if @tweets.size == 0 %>
+There are currently have no tweets. <a href="/tweets/new">Click here</a> to tweet something new!
+<% else %>
+  <% @tweets.each do |tweet| %>
+  @<%= tweet.user.username %>: <a href="/tweets/<%= tweet.id %>"><%= tweet.content %></a><br>
+  <% end %>
+<% end %>
+<form action="/logout" method="get">
+  <input type="submit" value="logout">
+</form>

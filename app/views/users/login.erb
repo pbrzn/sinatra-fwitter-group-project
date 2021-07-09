@@ -1,0 +1,15 @@
+<% if !Helpers.is_logged_in?(session) %>
+  <% if flash.has?(:message) %>
+  <%= flash[:message] %>
+  <% end %>
+
+  <h1>Log In</h1>
+  <form action="/login" method="POST">
+    Username: <input type="text" name="username">
+    Password: <input type="text" name="password">
+    <input type="submit" id="submit" value="Log In">
+  </form>
+  <% else %>
+    <h1>You are already logged in</h1>
+    <% redirect '/tweets' %>
+  <% end %>

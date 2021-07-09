@@ -1,0 +1,17 @@
+<% if !Helpers.is_logged_in?(session) %>
+
+<% if flash.has?(:message) %>
+<%= flash[:message] %>
+<% end %>
+
+  <h1>Sign Up</h1>
+  <form action="/signup" method="POST">
+    Username: <input type="text" name="username">
+    Email: <input type="text" name="email">
+    Password: <input type="text" name="password">
+    <input type="submit" value="Sign Up">
+  </form>
+<% else %>
+  <h1>You are already logged in.</h1>
+  <% redirect '/tweets' %>
+<% end %>

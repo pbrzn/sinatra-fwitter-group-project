@@ -1,0 +1,12 @@
+<h1>Welcome, <%= @user.username %>! Here are your tweets...</h1>
+<br>
+<% if @tweets.size == 0 %>
+You currently have no tweets. <a href="/tweets/new">Click here</a> to tweet something new!
+<% else %>
+  <% @tweets.each do |tweet| %>
+  <a href="/tweets/<%= tweet.id %>"><%= tweet.content %></a><br>
+  <% end %>
+<% end %>
+<form action="/logout" method="get">
+  <input type="submit" value="logout">
+</form>
