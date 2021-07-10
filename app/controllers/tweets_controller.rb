@@ -4,8 +4,8 @@ class TweetsController < ApplicationController
   use Rack::Flash
 
   get '/tweets' do
-    if logged_in?
-      @user = current_user
+    if Helpers.is_logged_in?(session)
+      @user = Helpers.current_user(session)
       @tweets = Tweet.all
       erb :'tweets/tweets'
     else
@@ -14,7 +14,7 @@ class TweetsController < ApplicationController
   end
 
   get '/tweets/new' do
-    if logged_in?
+    if Helpers.is_logged_in?(session)
       erb :'tweets/new'
     else
       redirect '/login'
@@ -22,7 +22,7 @@ class TweetsController < ApplicationController
   end
 
   get '/tweets/:id' do
-    if logged_in?
+    if Helpers.is_logged_in?(session)
       @tweet = Tweet.find(params[:id])
       erb :'tweets/show_tweet'
     else
@@ -31,17 +31,22 @@ class TweetsController < ApplicationController
   end
 
   post '/tweets' do
+    current_user = Helpers.current_user(session)
     if !params[:content].empty?
-      @tweet = Tweet.create(content: params[:content], user: current_user)
-      redirect "/tweets/#{@tweet.id}"
+      @tweet = current_user.tweets.build(content: params[:content])
+      if @tweet.save
+        redirect "/tweets/#{@tweet.id}"
+      else
+        flash[:message] = "Empty text field, please try again."
+        redirect '/tweets/new'
+      end
     else
-      flash[:message] = "Empty text field, please try again."
-      redirect '/tweets/new'
+      redirect to '/tweets/new'
     end
   end
 
   get '/tweets/:id/edit' do
-    if logged_in?
+    if Helpers.is_logged_in?(session)
       @tweet = Tweet.find(params[:id])
       erb :'tweets/edit_tweet'
     else
@@ -62,24 +67,14 @@ class TweetsController < ApplicationController
 
   delete '/tweets/:id/delete' do
     @tweet = Tweet.find(params[:id])
-    if logged_in? && @tweet.user == current_user
+    if Helpers.is_logged_in?(session) && @tweet.user == Helpers.current_user(session)
       @tweet.delete
       redirect '/tweets'
-    elsif logged_in? && @tweet.user != current_user
+    elsif Helpers.is_logged_in?(session) && @tweet.user != Helpers.current_user(session)
       redirect '/tweets'
     else
       redirect '/login'
     end
   end
-
-  helpers do
-		def logged_in?
-			!!session[:user_id]
-		end
-
-		def current_user
-			User.find(session[:user_id])
-		end
-	end
 
 end
